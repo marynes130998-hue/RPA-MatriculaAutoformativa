@@ -1,0 +1,25 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variables de entorno
+.env
+
+# Archivos de VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Json
+*.json
+
+# Borrador
+borrador.py
