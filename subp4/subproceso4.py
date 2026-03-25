@@ -3,12 +3,13 @@ from repositorios.sifods_repository import get_sifods_enrolled_count
 from services.log_service import logging
 from services.db_service import *
 from services.error_service import map_exception
+from services.email_service import send_email_exito
 
-def validacion_matricula(id_map, course_id, id_oferta, nombre_grupo):
-    logger = logging.getLogger("Subproceso 4")
+def validacion_matricula(id_map, course_id, id_oferta, nombre_oferta, nombre_grupo, tipo_oferta, validaciones):
+    logger = logging.getLogger("Subproceso 4 - Validacion Matricula")
 
     try:
-        logger.info("INICIO SUBPROCESO 4")
+        logger.info("INICIO SUBPROCESO 4 - VALIDACION MATRICULA")
 
         # ==============================================================
         # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE Y EN_EJECUCION
@@ -20,34 +21,37 @@ def validacion_matricula(id_map, course_id, id_oferta, nombre_grupo):
         moodle_count = get_moodle_enrolled_count(course_id)
 
         if sifods_count == moodle_count:
-            result = {
-                "status": "OK",
-                "difference": 0
-            }
+            status = "OK"
 
             finalizar_subproceso_ok(id_log, 4, moodle_count)
             finalizar_ejecucion_ok(id_ejecucion, id_log, moodle_count)
             logger.info(f"Validación correcta de matrícula {id_oferta} - {nombre_grupo}")
 
         else:
-            result = {
-                "status": "DIFFERENT",
-                "difference": sifods_count - moodle_count
-            }
+            status = "NOK"
 
             finalizar_subproceso_error(id_log, 4, 6, "Validación incorrecta de matrícula", moodle_count)
             finalizar_ejecucion_error(id_ejecucion, id_log, 6, "Validación incorrecta de matrícula", moodle_count)
             logger.error(f"Validación incorrecta de matrícula {id_oferta} - {nombre_grupo}")
 
-        logger.info("FIN SUBPROCESO 4")
+        logger.info("FIN SUBPROCESO 4 - VALIDACION MATRICULA")
 
-        return {
+        validaciones.append({
             "course_id": course_id,
-            "sifods": sifods_count,
-            "moodle": moodle_count,
-            "difference": result["difference"],
-            "status": result["status"]
-        }
+            "id_oferta": id_oferta,
+            "nombre_oferta": nombre_oferta,
+            "grupo": nombre_grupo,
+            "tipo_oferta": tipo_oferta,
+            "resultado": status,
+            "correo_enviado": "NO"
+        })
+    
+        return {
+                "status": status,
+                "validaciones": validaciones,
+                "error_id": None,
+                "excepcion": None
+            }
     
     except Exception as e:
         error_info = map_exception(e)
@@ -56,5 +60,49 @@ def validacion_matricula(id_map, course_id, id_oferta, nombre_grupo):
 
         id_ejecucion, id_log = id_map[(id_oferta, nombre_grupo)]
         finalizar_subproceso_error(id_log, 4, error_info["id"], str(e), 0)
+
+        status = "ERROR"
+
+        return {
+                "status": "ERROR",
+                "validaciones": None,
+                "error_id": error_info["id"],
+                "excepcion": str(e)
+            }
+
+def enviar_correo(validaciones):
+    logger = logging.getLogger("Subproceso 4 - Envío Correo")
+
+    try:
+        logger.info("INICIO SUBPROCESO 4 - ENVIO CORREO")
+
+        for registro in validaciones:
+            tipo_oferta = registro["tipo_oferta"].upper()
+            resultado = registro["resultado"]
+            nombre_oferta = registro["nombre_oferta"]
+            nombre_grupo = registro["grupo"]
+            course_id = registro["course_id"]
+            id_oferta = registro["id_oferta"]
+            correo_enviado = registro["correo_enviado"]
+
+            if tipo_oferta == "CURSO" and resultado == "OK" :
+                send_email_exito(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta)
+                registro["correo_enviado"] = "SÍ"
+            elif tipo_oferta == "PROGRAMA" and correo_enviado == "NO":
+                validacion_OK = all(registro["resultado"] == "OK" for registro in validaciones
+                if registro["id_oferta"] == id_oferta
+                )
+                if validacion_OK:
+                    send_email_exito(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta)
+                    for registro in validaciones:
+                        if registro.get("id_oferta") == id_oferta:
+                            registro["correo_enviado"] = "SÍ"
+
+        logger.info("FIN SUBPROCESO 4 - ENVIO CORREO")
+
+        return
+    
+    except Exception as e:
+        logger.info(str(e))
 
         raise

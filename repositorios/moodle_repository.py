@@ -31,4 +31,5 @@ def get_moodle_enrolled_count(course_id):
         return total_estudiantes
     
     except Exception as e:
+        print(str(e))
         raise RuntimeError(f"Error consultando Moodle para course_id = {course_id}") from e

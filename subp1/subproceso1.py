@@ -39,7 +39,7 @@ def obtener_inscritos():
             id_ejecucion, id_log = id_map[(id_oferta, grupo)]
             iniciar_subproceso(id_log, 1, 0)
         
-        df_cursos = df_total[["cur_id", "id_oferta","nombre_oferta","nombre_grupo"]].drop_duplicates()
+        df_cursos = df_total[["cur_id", "id_oferta","nombre_oferta","nombre_grupo", "tipo_oferta"]].drop_duplicates()
 
         # ==================================================================
         # LUEGO DEL PASO N, INSERTAR REGISTROS DE LOS CURSOS COMO COMPLETADO

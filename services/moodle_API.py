@@ -25,6 +25,7 @@ def call_moodle_api(function, course_id, offset, limit):
         response = requests.get(MOODLE_URL, params)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
+        print(str(e))
         raise RuntimeError("Error en llamada a Moodle") from e
     
     try:

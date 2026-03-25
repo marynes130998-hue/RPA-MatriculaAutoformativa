@@ -14,6 +14,9 @@ import pandas as pd
 import os
 import base64
 from config.settings import EMAIL_CONFIG
+from datetime import datetime
+from pathlib import Path
+from openpyxl.utils import get_column_letter
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
@@ -105,9 +108,12 @@ def build_email_body(total):
 
     return body
 
-def construir_reporte(nombre_oferta, nombre_grupo, course_id):
+def construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta):
 
-    df = ejecutar_query_masiva(queries.QUERY_INFO_PARTICIPANTE, (course_id,))
+    if tipo_oferta == "CURSO":
+        df = ejecutar_query_masiva(queries.QUERY_INFO_PARTICIPANTE, (course_id,))
+    elif tipo_oferta == "PROGRAMA":
+        df = ejecutar_query_masiva(queries.QUERY_INFO_PARTICIPANTE_PROGRAMA, (id_oferta,))
 
     # Renombrar columna "usuario_documento" como "DNI"
     df = df.rename(columns={
@@ -123,7 +129,10 @@ def construir_reporte(nombre_oferta, nombre_grupo, course_id):
     fecha = datetime.now().strftime("%d.%m.%y")
 
     # 🔹 2. Construir nombre del archivo
-    nombre_archivo = f"Reporte Matriculados Detalle {nombre_grupo}_{nombre_oferta}_{fecha}.xlsx"
+    if tipo_oferta == "CURSO":
+        nombre_archivo = f"Reporte Matriculados Detalle {nombre_grupo}_{nombre_oferta}_{fecha}.xlsx"
+    elif tipo_oferta == "PROGRAMA":
+        nombre_archivo = f"Reporte Matriculados Detalle {nombre_oferta}_{fecha}.xlsx"
 
     # 🔹 3. Ruta carpeta reportes
     carpeta_reportes = os.path.join(os.getcwd(), "reportes")
@@ -174,16 +183,20 @@ def construir_reporte(nombre_oferta, nombre_grupo, course_id):
     # 🔹 5. Retornar ruta
     return ruta_completa, total_registros
 
-def send_email_exito(nombre_oferta, nombre_grupo, course_id):
+def send_email_exito(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta):
     service = get_gmail_service()
 
     message = MIMEMultipart()
 
-    ruta_completa, total = construir_reporte(nombre_oferta, nombre_grupo, course_id)
+    ruta_completa, total = construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta)
     body = build_email_body(total)
     to_emails = obtener_destinatarios(nombre_oferta, nombre_grupo)
     message["to"] = ", ".join(to_emails)
-    message["subject"] = f"Reporte de Matrícula del {nombre_grupo} del curso {nombre_oferta}"
+
+    if tipo_oferta == "CURSO":
+        message["subject"] = f"Reporte de Matrícula del {nombre_grupo} del curso {nombre_oferta}"
+    elif tipo_oferta == "PROGRAMA":
+         message["subject"] = f"Reporte de Matrícula del programa {nombre_oferta}"
 
     message.attach(MIMEText(body, "html"))
 
@@ -221,6 +234,84 @@ def send_email_error(error_info):
     <p>DIFODS TI </p>
     """
     message.attach(MIMEText(body, "html"))
+
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+
+    service.users().messages().send(
+        userId="me",
+        body={"raw": raw}
+    ).execute()
+
+def construir_reporte_final(validaciones):
+    # Lista de validaciones
+    df = pd.DataFrame(validaciones)
+
+    # 1. Generar timestamp (año-mes-día hora-minuto-segundo)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    # 2. Definir carpeta "reportes"
+    ruta_reportes = Path("reportes")
+    ruta_reportes.mkdir(exist_ok=True)  # crea la carpeta si no existe
+
+    # 3. Nombre del archivo
+    nombre_archivo = f"Reporte Validaciones {timestamp}.xlsx"
+
+    # 4. Ruta completa
+    ruta_completa = ruta_reportes / nombre_archivo
+
+    # 5. Crear Excel con nombre de hoja
+    with pd.ExcelWriter(ruta_completa, engine="openpyxl") as writer:
+        sheet_name = "Validaciones"
+        df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+        # Obtener worksheet
+        ws = writer.sheets[sheet_name]
+
+        # 🔹 Autofit columnas
+        for col_idx, col in enumerate(df.columns, 1):
+            max_length = 0
+            col_letter = get_column_letter(col_idx)
+
+            # considerar encabezado
+            max_length = max(max_length, len(col))
+
+            # considerar datos
+            for cell in ws[col_letter]:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+
+            # ajustar ancho (+2 de margen)
+            ws.column_dimensions[col_letter].width = max_length + 2
+    
+    return ruta_completa
+
+def send_email_info(validaciones):
+    service = get_gmail_service()
+
+    message = MIMEMultipart()
+
+    ruta_completa = construir_reporte_final(validaciones)
+
+    to_emails = EMAIL_DESTINATARIOS
+    message["to"] = ", ".join(to_emails)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    message["subject"] = f"ROBOT MATRICULA AUTOFORMATIVA | INFO | RESULTADO DE LA EJECUCIÓN DEL DÍA {timestamp}"
+
+    body = f"""
+    <p>Estimados,</p>
+
+    <p>Se adjunta resultados de la ejecución del robot.</p>
+
+    <p>Saludos cordiales, </p>
+    <p>Equipo de Automatización </p>
+    <p>DIFODS TI </p>
+    """
+
+    message.attach(MIMEText(body, "html"))
+
+    attach_file(message, ruta_completa)
 
     raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
