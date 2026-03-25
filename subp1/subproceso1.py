@@ -17,11 +17,11 @@ def obtener_inscritos():
         # ===============================================
         # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE
         # ===============================================
-        df_unicos = df_total[["id_oferta", "nombre_grupo"]].drop_duplicates()
+        df_cursos = df_total[["cur_id", "id_oferta","nombre_oferta","nombre_grupo", "tipo_oferta"]].drop_duplicates()
 
         registros = [
             (row.id_oferta, row.nombre_grupo)
-            for row in df_unicos.itertuples(index=False)
+            for row in df_cursos.itertuples(index=False)
         ]
 
         id_map = {}
@@ -39,8 +39,6 @@ def obtener_inscritos():
             id_ejecucion, id_log = id_map[(id_oferta, grupo)]
             iniciar_subproceso(id_log, 1, 0)
         
-        df_cursos = df_total[["cur_id", "id_oferta","nombre_oferta","nombre_grupo", "tipo_oferta"]].drop_duplicates()
-
         # ==================================================================
         # LUEGO DEL PASO N, INSERTAR REGISTROS DE LOS CURSOS COMO COMPLETADO
         # ==================================================================
@@ -50,7 +48,7 @@ def obtener_inscritos():
 
         logger.info(f"FIN SUBPROCESO 1")
 
-        return registros, id_map, df_total, df_cursos, df_unicos
+        return registros, id_map, df_total, df_cursos
     
     except Exception as e:
         error_info = map_exception(e)
@@ -59,7 +57,7 @@ def obtener_inscritos():
 
         registros = [
             (row.id_oferta, row.nombre_grupo, error_info["id"])
-            for row in df_unicos.itertuples(index=False)
+            for row in df_cursos.itertuples(index=False)
         ]
 
         for id_oferta, grupo, id_error in registros:

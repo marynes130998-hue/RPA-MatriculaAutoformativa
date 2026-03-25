@@ -2,8 +2,8 @@ from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
-from services.db_service import ejecutar_query_masiva
-from config.settings import EMAIL_DESTINATARIOS
+from services.db_service import execute_query_df
+from config.settings import EMAIL_DESTINATARIOS, EMAIL_CONFIG
 from email.mime.base import MIMEBase
 from email import encoders
 from db import queries
@@ -13,8 +13,6 @@ from email.mime.text import MIMEText
 import pandas as pd
 import os
 import base64
-from config.settings import EMAIL_CONFIG
-from datetime import datetime
 from pathlib import Path
 from openpyxl.utils import get_column_letter
 
@@ -111,9 +109,9 @@ def build_email_body(total):
 def construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta):
 
     if tipo_oferta == "CURSO":
-        df = ejecutar_query_masiva(queries.QUERY_INFO_PARTICIPANTE, (course_id,))
+        df = execute_query_df(queries.QUERY_INFO_PARTICIPANTE, (course_id,))
     elif tipo_oferta == "PROGRAMA":
-        df = ejecutar_query_masiva(queries.QUERY_INFO_PARTICIPANTE_PROGRAMA, (id_oferta,))
+        df = execute_query_df(queries.QUERY_INFO_PARTICIPANTE_PROGRAMA, (id_oferta,))
 
     # Renombrar columna "usuario_documento" como "DNI"
     df = df.rename(columns={
@@ -183,10 +181,16 @@ def construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_of
     # 🔹 5. Retornar ruta
     return ruta_completa, total_registros
 
-def send_email_exito(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta):
+def send_email_exito(registro):
     service = get_gmail_service()
 
     message = MIMEMultipart()
+
+    nombre_oferta = registro["nombre_oferta"]
+    nombre_grupo = registro["grupo"]
+    course_id = registro["course_id"]
+    tipo_oferta = registro["tipo_oferta"].upper()
+    id_oferta = registro["id_oferta"]
 
     ruta_completa, total = construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta)
     body = build_email_body(total)

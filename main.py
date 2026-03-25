@@ -10,6 +10,7 @@ from config.settings import MAX_REINTENTOS
 
 def main():
     logger = logging.getLogger("Main")
+    logger.info(f"Se inició ejecución del robot")
 
     intento = 0
 
@@ -20,35 +21,29 @@ def main():
         todo_ok = True
 
         try:
-            logger.info(f"Se inició ejecución del robot")
-
             # Subproceso 1
-            registros, id_map, df_total, df_cursos, df_unicos = obtener_inscritos()
+            registros, id_map, df_total, df_cursos = obtener_inscritos()
 
             # Subproceso 2
-            crear_usuarios(registros, id_map, df_unicos)
+            crear_usuarios(registros, id_map, df_cursos)
 
             # Subproceso 3
-            ejecutar_matricula(registros, id_map, df_unicos, df_total)
+            ejecutar_matricula(registros, id_map, df_cursos, df_total)
 
             validaciones = []
 
-            for _,row in df_cursos.iterrows():
-                course_id = row["cur_id"]
-                id_oferta = row["id_oferta"]
-                nombre_oferta = row["nombre_oferta"]
-                nombre_grupo = row["nombre_grupo"]
-                tipo_oferta = row["tipo_oferta"]
+            for row in df_cursos.itertuples(index=False):
+                course_id = row.cur_id
 
                 # Subproceso 4 - Parte 1
-                result = validacion_matricula(id_map, course_id, id_oferta, nombre_oferta, nombre_grupo, tipo_oferta, validaciones)
+                result = validacion_matricula(id_map, row, validaciones)
 
-                if result["status"] == "OK":
-                    logger.info(f"Validación correcta de la matrícula del curso {course_id}")
-                elif result["status"] == "NOK":
-                    logger.info(f"Validación incorrecta de la matrícula del curso {course_id}")
+                if result["status"] == "NOK":
                     todo_ok = False
                 elif result["status"] == "ERROR":
+                    id_oferta = row.id_oferta
+                    nombre_grupo = row.nombre_grupo
+                    
                     id_ejecucion, id_log = id_map[(id_oferta, nombre_grupo)]
                     finalizar_ejecucion_error(id_ejecucion, id_log, result["error_id"], result["excepcion"], 0)
                     return
@@ -73,7 +68,7 @@ def main():
 
             registros = [
                 (row.id_oferta, row.nombre_grupo, error_info["id"])
-                for row in df_unicos.itertuples(index=False)
+                for row in df_cursos.itertuples(index=False)
             ]
 
             for id_oferta, grupo, id_error in registros:

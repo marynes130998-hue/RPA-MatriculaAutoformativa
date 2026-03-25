@@ -5,11 +5,17 @@ from services.db_service import *
 from services.error_service import map_exception
 from services.email_service import send_email_exito
 
-def validacion_matricula(id_map, course_id, id_oferta, nombre_oferta, nombre_grupo, tipo_oferta, validaciones):
+def validacion_matricula(id_map, row, validaciones):
     logger = logging.getLogger("Subproceso 4 - Validacion Matricula")
 
     try:
         logger.info("INICIO SUBPROCESO 4 - VALIDACION MATRICULA")
+
+        course_id = row.cur_id
+        id_oferta = row.id_oferta
+        nombre_oferta = row.nombre_oferta
+        nombre_grupo = row.nombre_grupo
+        tipo_oferta = row.tipo_oferta
 
         # ==============================================================
         # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE Y EN_EJECUCION
@@ -79,21 +85,18 @@ def enviar_correo(validaciones):
         for registro in validaciones:
             tipo_oferta = registro["tipo_oferta"].upper()
             resultado = registro["resultado"]
-            nombre_oferta = registro["nombre_oferta"]
-            nombre_grupo = registro["grupo"]
-            course_id = registro["course_id"]
             id_oferta = registro["id_oferta"]
             correo_enviado = registro["correo_enviado"]
 
             if tipo_oferta == "CURSO" and resultado == "OK" :
-                send_email_exito(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta)
+                send_email_exito(registro)
                 registro["correo_enviado"] = "SÍ"
             elif tipo_oferta == "PROGRAMA" and correo_enviado == "NO":
                 validacion_OK = all(registro["resultado"] == "OK" for registro in validaciones
                 if registro["id_oferta"] == id_oferta
                 )
                 if validacion_OK:
-                    send_email_exito(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_oferta)
+                    send_email_exito(registro)
                     for registro in validaciones:
                         if registro.get("id_oferta") == id_oferta:
                             registro["correo_enviado"] = "SÍ"

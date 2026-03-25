@@ -4,7 +4,7 @@ from services.log_service import logging
 from services.error_service import map_exception
 from services.db_service import *
 
-def crear_usuarios(registros, id_map, df_unicos):
+def crear_usuarios(registros, id_map, df_cursos):
     logger = logging.getLogger("Subproceso 2")
 
     try:
@@ -35,7 +35,7 @@ def crear_usuarios(registros, id_map, df_unicos):
 
         registros = [
             (row.id_oferta, row.nombre_grupo, error_info["id"])
-            for row in df_unicos.itertuples(index=False)
+            for row in df_cursos.itertuples(index=False)
         ]
 
         for id_oferta, grupo, id_error in registros:

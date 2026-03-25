@@ -2,44 +2,6 @@ from db.connection import get_connection
 import pandas as pd
 from db.queries import *
 
-def ejecutar_query(query, data):
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute(query, (data,))
-        resultado = cursor.fetchone()
-        cursor.close()
-
-        return resultado
-    except Exception as e:
-        raise RuntimeError(f"Error ejecutando query: {query[:100]}") from e
-    finally:
-        conn.close()
-
-def ejecutar_query_masiva(query, params):
-    try:
-        conn = get_connection()
-        df = pd.read_sql(query, conn, params=params)
-        return df
-    except Exception as e:
-        raise RuntimeError(f"Error ejecutando query: {query[:100]}") from e
-    finally:
-        conn.close()
-
-def ejecutar_query_registros(query, data):
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.fast_executemany = True
-        cursor.executemany(query, data)
-        conn.commit()
-        cursor.close()
-    except Exception as e:
-        raise RuntimeError(f"Error ejecutando query: {query[:100]}") from e
-    finally:
-        conn.close()
-
 def execute_query(query, params=None, return_id=False):
     conn = get_connection()
     cursor = conn.cursor()
@@ -59,6 +21,16 @@ def execute_query(query, params=None, return_id=False):
     conn.close()
 
     return None
+
+def execute_query_df(query, params):
+    try:
+        conn = get_connection()
+        df = pd.read_sql(query, conn, params=params)
+        return df
+    except Exception as e:
+        raise RuntimeError(f"Error ejecutando query: {query[:100]}") from e
+    finally:
+        conn.close()
 
 def crear_ejecucion(id_oferta, grupo, nro_matriculas):
     id_ejecucion = execute_query(

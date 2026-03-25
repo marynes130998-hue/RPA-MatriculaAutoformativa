@@ -4,7 +4,7 @@ from services.log_service import logging
 from services.error_service import map_exception
 from services.db_service import *
 
-def ejecutar_matricula(registros, id_map, df_unicos, df_total):
+def ejecutar_matricula(registros, id_map, df_cursos, df_total):
     logger = logging.getLogger("Subproceso 3")
 
     try:
@@ -35,7 +35,7 @@ def ejecutar_matricula(registros, id_map, df_unicos, df_total):
 
         registros = [
             (row.id_oferta, row.nombre_grupo, error_info["id"])
-            for row in df_unicos.itertuples(index=False)
+            for row in df_cursos.itertuples(index=False)
         ]
 
         for id_oferta, grupo, id_error in registros:
