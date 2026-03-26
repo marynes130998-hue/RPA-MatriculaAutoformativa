@@ -1,4 +1,4 @@
-from services.moodle_API import call_moodle_api
+from services.moodle_API import moodle_api_get_enrolled_users
 from config.settings import nro_limit, ROL_ESTUDIANTE
 
 def get_moodle_enrolled_count(course_id):
@@ -10,7 +10,7 @@ def get_moodle_enrolled_count(course_id):
     
     try:
         while paginas < MAX_PAGINAS:
-            users = call_moodle_api("core_enrol_get_enrolled_users", course_id, offset, limit)
+            users = moodle_api_get_enrolled_users(course_id, offset, limit)
 
             if not users:
                 break

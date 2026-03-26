@@ -1,11 +1,11 @@
 import requests
 from config.settings import MOODLE_URL, MOODLE_TOKEN
 
-def call_moodle_api(function, course_id, offset, limit):
+def moodle_api_get_enrolled_users(course_id, offset, limit):
     
     params = {
         "wstoken": MOODLE_TOKEN,
-        "wsfunction": function,
+        "wsfunction": "core_enrol_get_enrolled_users",
         "moodlewsrestformat": "json",
         "courseid": course_id,
 

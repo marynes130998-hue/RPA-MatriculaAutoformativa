@@ -5,7 +5,7 @@ from subp4.subproceso4 import validacion_matricula, enviar_correo
 from services.email_service import send_email_error, send_email_info
 from services.log_service import logging
 from services.error_service import map_exception
-from services.db_service import *
+from services.db_service import finalizar_ejecucion_error
 from config.settings import MAX_REINTENTOS
 
 def main():
@@ -33,8 +33,6 @@ def main():
             validaciones = []
 
             for row in df_cursos.itertuples(index=False):
-                course_id = row.cur_id
-
                 # Subproceso 4 - Parte 1
                 result = validacion_matricula(id_map, row, validaciones)
 
