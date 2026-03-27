@@ -1,14 +1,14 @@
+import os
+from dotenv import load_dotenv #seguridad de credenciales
+
+load_dotenv()
+
 # ============================================================
 # BASE DE DATOS
 # ============================================================
 SERVER = "localhost"
 DATABASE = "db_automatizacion"
 
-# ============================================================
-# MOODLE
-# ============================================================
-MOODLE_URL = "https://campusvirtual-sifods.minedu.gob.pe/webservice/rest/server.php"
-MOODLE_TOKEN = "365d5e601bd29d6e983e643c513dfb0d"
 
 # ============================================================
 # GMAIL
@@ -40,7 +40,6 @@ EMAIL_CONFIG = {
 # Destinatarios para correo error API
 nro_limit = 2000
 
-<<<<<<< HEAD
 # API SIFODS (Subproceso 2)
 # Nota: ajustar según contrato real del servicio
 # - Endpoint validación existencia: {SIFODS_API_BASE_URL}/usuarios/existencia
@@ -53,45 +52,29 @@ SIFODS_API_TOKEN = ""
 SIFODS_API_TIMEOUT = 30
 SIFODS_API_BATCH_SIZE = 500
 
-=======
->>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
 # ============================================================
 # CONFIGURACIÓN DEL ROBOT
 # ============================================================
 ROL_ESTUDIANTE = 5
-<<<<<<< HEAD
 MAX_REINTENTOS = 3
 
 
 #=============================================================
-# CONFIGURACION VARIABLES DE ENV
+#DEFINICION DE ENVIROMENT PARA URL DE APIS
 #=============================================================
-ENV = "CAP"   # DEV / PROD
-
-if ENV == "CAP":
-    BASE_URL_ACCIONES_FORMATIVAS = "https://sifods-accionesformativasmoodle-api-cap.minedu.gob.pe"
-    BASE_URL_ADMINISTRADOR_PLATAFORMA = "https://sifods-administradorplataforma-api-cap.minedu.gob.pe"
-    BASE_URL_MOODLE = "https://campusvirtual-sifods.minedu.gob.pe"
-
-elif ENV == "PROD":
-    BASE_URL_ACCIONES_FORMATIVAS = "https://sifods-accionesformativasmoodle-api.minedu.gob.pe"
-    BASE_URL_ADMINISTRADOR_PLATAFORMA = "https://sifods-administradorplataforma-api.minedu.gob.pe"
-    BASE_URL_MOODLE = "https://campusvirtual-sifods.minedu.gob.pe"
-
-
-import os
-from dotenv import load_dotenv #seguridad de credenciales
-
-load_dotenv()
 
 ENV = os.getenv("ENV")
 
-SIFODS_URL_DEV = os.getenv("SIFODS_URL_DEV")
-SIFODS_URL_PROD = os.getenv("SIFODS_URL_PROD")
+#SIFODS
+BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP = os.getenv("BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP")
+BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_CAP = os.getenv("BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_CAP")
 
-SIFODS_TOKEN_DEV = os.getenv("SIFODS_TOKEN_DEV")
-SIFODS_TOKEN_PROD = os.getenv("SIFODS_TOKEN_PROD")
+BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD = os.getenv("BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD")
+BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_PROD = os.getenv("BASE_URL_ADMINISTRADOR_PLATAFORMA_PROD")
 
-=======
-MAX_REINTENTOS = 3
->>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
+#MOODLE
+BASE_URL_MOODLE_PROD = os.getenv("BASE_URL_MOODLE_PROD")
+BASE_URL_MOODLE_CAP = os.getenv("BASE_URL_MOODLE_CAP")
+
+MOODLE_TOKEN_DEV=os.getenv("MOODLE_TOKEN_DEV")
+MOODLE_TOKEN_PROD=os.getenv("MOODLE_TOKEN_PROD")

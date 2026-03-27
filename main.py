@@ -1,9 +1,8 @@
 from subp1.subproceso1 import obtener_inscritos
-<<<<<<< HEAD
+
 from subp2.subproceso2 import ejecutar_subproceso2
-=======
 from subp2.subproceso2 import crear_usuarios
->>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
+
 from subp3.subproceso3 import ejecutar_matricula
 from subp4.subproceso4 import validacion_matricula, enviar_correo
 from services.email_service import send_email_error, send_email_info
@@ -11,11 +10,8 @@ from services.log_service import logging
 from services.error_service import map_exception
 from services.db_service import finalizar_ejecucion_error
 from config.settings import MAX_REINTENTOS
-<<<<<<< HEAD
-from data_simulada.simulacion_data import obtener_inscritos_mock
-=======
->>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
 
+from data_simulada.simulacion_data import obtener_inscritos_mock
 def main():
     logger = logging.getLogger("Main")
     logger.info(f"Se inició ejecución del robot")
@@ -30,56 +26,55 @@ def main():
 
         try:
             # Subproceso 1
-<<<<<<< HEAD
-            #registros, id_map, df_total, df_cursos = obtener_inscritos()
+            registros, id_map, df_total, df_cursos = obtener_inscritos()
 
             # Subproceso 2
             registros, id_map, df_total, df_cursos = obtener_inscritos_mock()
 
             ejecutar_subproceso2(registros, id_map, df_cursos, df_total)
 
-            # Subproceso 3
-            # # ejecutar_matricula(registros, id_map, df_cursos, df_total)
+            #Subproceso 3
+            ejecutar_matricula(registros, id_map, df_cursos, df_total)
 
-            # # validaciones = []
+            validaciones = []
 
-<<<<<<< Updated upstream
+
             for row in df_cursos.itertuples(index=False):
+                #Subproceso 4 - Parte 1
+                result = validacion_matricula(id_map, row, validaciones)
+
+            for row in df_cursos.itertuples(index=False):
+                course_id = row.cur_id
+
                 # Subproceso 4 - Parte 1
                 result = validacion_matricula(id_map, row, validaciones)
-=======
-            # # for row in df_cursos.itertuples(index=False):
-            # #     course_id = row.cur_id
 
-            # #     # Subproceso 4 - Parte 1
-            # #     result = validacion_matricula(id_map, row, validaciones)
->>>>>>> Stashed changes
 
-            # #     if result["status"] == "NOK":
-            # #         todo_ok = False
-            # #     elif result["status"] == "ERROR":
-            # #         id_oferta = row.id_oferta
-            # #         nombre_grupo = row.nombre_grupo
+                if result["status"] == "NOK":
+                    todo_ok = False
+                elif result["status"] == "ERROR":
+                    id_oferta = row.id_oferta
+                    nombre_grupo = row.nombre_grupo
                     
-            # #         id_ejecucion, id_log = id_map[(id_oferta, nombre_grupo)]
-            # #         finalizar_ejecucion_error(id_ejecucion, id_log, result["error_id"], result["excepcion"], 0)
-            # #         return
+                    id_ejecucion, id_log = id_map[(id_oferta, nombre_grupo)]
+                    finalizar_ejecucion_error(id_ejecucion, id_log, result["error_id"], result["excepcion"], 0)
+                    return
 
-            # # # Subproceso 4 - Parte 2
-            # # enviar_correo(validaciones)
+            # Subproceso 4 - Parte 2
+            enviar_correo(validaciones)
 
-            # # # Información a Equipo
-            # # send_email_info(validaciones)
+            # Información a Equipo
+            send_email_info(validaciones)
 
-            # # if todo_ok:
-            # #     logger.info("Todas las matrículas fueron validadas correctamente")
-            # #     break
-            # # else:
-            # #     if intento < MAX_REINTENTOS:
-            # #         logger.warning("Hay matrículas de cursos con error, se reintentará")
-            # #     else:
-            # #         logger.warning("Hay matrículas de cursos con error, se llegó al máximo de reintentos")
-=======
+            if todo_ok:
+                logger.info("Todas las matrículas fueron validadas correctamente")
+                break
+            else:
+                if intento < MAX_REINTENTOS:
+                    logger.warning("Hay matrículas de cursos con error, se reintentará")
+                else:
+                    logger.warning("Hay matrículas de cursos con error, se llegó al máximo de reintentos")
+
             registros, id_map, df_total, df_cursos = obtener_inscritos()
 
             # Subproceso 2
@@ -118,7 +113,7 @@ def main():
                     logger.warning("Hay matrículas de cursos con error, se reintentará")
                 else:
                     logger.warning("Hay matrículas de cursos con error, se llegó al máximo de reintentos")
->>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
+
 
         except Exception as e:
             error_info = map_exception(e)
