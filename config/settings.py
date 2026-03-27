@@ -40,6 +40,7 @@ EMAIL_CONFIG = {
 # Destinatarios para correo error API
 nro_limit = 2000
 
+<<<<<<< HEAD
 # API SIFODS (Subproceso 2)
 # Nota: ajustar según contrato real del servicio
 # - Endpoint validación existencia: {SIFODS_API_BASE_URL}/usuarios/existencia
@@ -52,10 +53,13 @@ SIFODS_API_TOKEN = ""
 SIFODS_API_TIMEOUT = 30
 SIFODS_API_BATCH_SIZE = 500
 
+=======
+>>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
 # ============================================================
 # CONFIGURACIÓN DEL ROBOT
 # ============================================================
 ROL_ESTUDIANTE = 5
+<<<<<<< HEAD
 MAX_REINTENTOS = 3
 
 
@@ -88,3 +92,6 @@ SIFODS_URL_PROD = os.getenv("SIFODS_URL_PROD")
 SIFODS_TOKEN_DEV = os.getenv("SIFODS_TOKEN_DEV")
 SIFODS_TOKEN_PROD = os.getenv("SIFODS_TOKEN_PROD")
 
+=======
+MAX_REINTENTOS = 3
+>>>>>>> 4ce25c6c44941afea40a2778625ec5b3d9f2642f
