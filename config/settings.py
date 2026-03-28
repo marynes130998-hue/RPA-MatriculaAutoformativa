@@ -1,14 +1,13 @@
+import os
+from dotenv import load_dotenv #seguridad de credenciales
+
+load_dotenv()
+
 # ============================================================
 # BASE DE DATOS
 # ============================================================
 SERVER = "localhost"
 DATABASE = "db_automatizacion"
-
-# ============================================================
-# MOODLE
-# ============================================================
-MOODLE_URL = "https://campusvirtual-sifods.minedu.gob.pe/webservice/rest/server.php"
-MOODLE_TOKEN = "365d5e601bd29d6e983e643c513dfb0d"
 
 # ============================================================
 # GMAIL
@@ -35,13 +34,48 @@ EMAIL_CONFIG = {
 }
 
 # ============================================================
-# API
+# API MOODLE
 # ============================================================
-# Destinatarios para correo error API
+# Límite por llamada
 nro_limit = 2000
+MOODLE_URL = "https://campusvirtual-sifods.minedu.gob.pe/webservice/rest/server.php"
+MOODLE_TOKEN = "365d5e601bd29d6e983e643c513dfb0d"
+
+# ============================================================
+# API SIFODS (Subproceso 2)
+# ============================================================
+# Nota: ajustar según contrato real del servicio
+# - Endpoint validación existencia: {SIFODS_API_BASE_URL}/usuarios/existencia
+#   Body esperado: {"documentos": ["12345678", ...]}
+#   Respuesta esperada: {"documentos_existentes": ["12345678", ...]}
+# - Endpoint creación: {SIFODS_API_BASE_URL}/usuarios
+#   Body esperado: {"usuarios": [{...}, ...]}
+SIFODS_API_BASE_URL = ""
+SIFODS_API_TOKEN = ""
+SIFODS_API_TIMEOUT = 30
+SIFODS_API_BATCH_SIZE = 500
 
 # ============================================================
 # CONFIGURACIÓN DEL ROBOT
 # ============================================================
 ROL_ESTUDIANTE = 5
 MAX_REINTENTOS = 3
+
+#=============================================================
+# DEFINICION DE ENVIRONMENT PARA URL DE APIS
+#=============================================================
+ENV = os.getenv("ENV")
+
+#SIFODS
+BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP = os.getenv("BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP")
+BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_CAP = os.getenv("BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_CAP")
+
+BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD = os.getenv("BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD")
+BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_PROD = os.getenv("BASE_URL_ADMINISTRADOR_PLATAFORMA_PROD")
+
+#MOODLE
+BASE_URL_MOODLE_PROD = os.getenv("BASE_URL_MOODLE_PROD")
+BASE_URL_MOODLE_CAP = os.getenv("BASE_URL_MOODLE_CAP")
+
+MOODLE_TOKEN_DEV=os.getenv("MOODLE_TOKEN_DEV")
+MOODLE_TOKEN_PROD=os.getenv("MOODLE_TOKEN_PROD")

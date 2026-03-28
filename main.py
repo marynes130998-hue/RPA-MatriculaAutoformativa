@@ -1,11 +1,12 @@
 from subp1.subproceso1 import obtener_inscritos
-from subp2.subproceso2 import crear_usuarios
+from subp2.subproceso2 import ejecutar_subproceso2
 from subp3.subproceso3 import ejecutar_matricula
 from subp4.subproceso4 import validacion_matricula, enviar_correo
 from services.email_service import send_email_error, send_email_info, send_email_no_data
 from services.log_service import logging
 from services.error_service import map_exception
 from config.settings import MAX_REINTENTOS
+from data_simulada.simulacion_data import obtener_inscritos_mock
 
 def main():
     logger = logging.getLogger("Main")
@@ -28,17 +29,17 @@ def main():
                 return
 
             # Subproceso 2
-            crear_usuarios(registros, id_map, df_cursos)
+            registros, id_map, df_total, df_cursos = obtener_inscritos_mock()
+            ejecutar_subproceso2(registros, id_map, df_cursos, df_total)
 
-            # Subproceso 3
+            #Subproceso 3
             ejecutar_matricula(registros, id_map, df_cursos, df_total)
 
             validaciones = []
-
             for row in df_cursos.itertuples(index=False):
-                # Subproceso 4 - Parte 1
+                #Subproceso 4 - Parte 1
                 result = validacion_matricula(id_map, row, validaciones)
-
+                
                 if result["status"] == "NOK" or result["status"] == "ERROR":
                     todo_ok = False
 
