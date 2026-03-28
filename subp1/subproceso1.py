@@ -14,6 +14,10 @@ def obtener_inscritos():
         df_total = pd.read_sql(queries.QUERY_OBTENER_INFO_CURSO, conn)
         conn.close()
 
+        if df_total.empty:
+            logger.warning("No hay data para procesar")
+            return None, None, df_total, None
+
         # ===============================================
         # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE
         # ===============================================
@@ -63,5 +67,5 @@ def obtener_inscritos():
         for id_oferta, grupo, id_error in registros:
             id_ejecucion, id_log = id_map[(id_oferta, grupo)]
             finalizar_subproceso_error(id_log, 1, id_error, str(e), 0)
-
+            finalizar_ejecucion_error(id_ejecucion, id_log, id_error, str(e), 0)
         raise

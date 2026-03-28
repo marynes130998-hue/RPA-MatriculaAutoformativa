@@ -323,3 +323,34 @@ def send_email_info(validaciones):
         userId="me",
         body={"raw": raw}
     ).execute()
+
+def send_email_no_data():
+    service = get_gmail_service()
+
+    message = MIMEMultipart()
+
+    to_emails = EMAIL_DESTINATARIOS
+    message["to"] = ", ".join(to_emails)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    message["subject"] = f"ROBOT MATRICULA AUTOFORMATIVA | INFO | NO HAY DATA PARA LA EJECUCIÓN DEL DÍA {timestamp}"
+
+    body = f"""
+    <p>Estimados,</p>
+
+    <p>No se encontró data para ejecutar la matrícula. Revisar base de datos. </p>
+
+    <p>Saludos cordiales, </p>
+    <p>Equipo de Automatización </p>
+    <p>DIFODS TI </p>
+    """
+
+    message.attach(MIMEText(body, "html"))
+
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+
+    service.users().messages().send(
+        userId="me",
+        body={"raw": raw}
+    ).execute()

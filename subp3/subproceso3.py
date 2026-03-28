@@ -41,5 +41,5 @@ def ejecutar_matricula(registros, id_map, df_cursos, df_total):
         for id_oferta, grupo, id_error in registros:
             id_ejecucion, id_log = id_map[(id_oferta, grupo)]
             finalizar_subproceso_error(id_log, 3, id_error, str(e), 0)
-
+            finalizar_ejecucion_error(id_ejecucion, id_log, id_error, str(e), 0)
         raise

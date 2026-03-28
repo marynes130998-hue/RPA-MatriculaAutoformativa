@@ -21,14 +21,35 @@ def moodle_api_get_enrolled_users(course_id, offset, limit):
         "options[2][value]": limit, 
     }
 
+    # --- Validar llamada a MOODLE API ---
     try:
         response = requests.get(MOODLE_URL, params)
         response.raise_for_status()
+
+    except requests.exceptions.Timeout as e:
+        print(str(e))
+        raise RuntimeError("Timeout en API Moodle") from e
+
+    except requests.exceptions.ConnectionError as e:
+        print(str(e))
+        raise RuntimeError("Error de conexión con Moodle") from e
+
+    except requests.exceptions.HTTPError as e:
+        print(str(e))
+        raise RuntimeError(f"Error HTTP Moodle: {response.status_code}") from e
+
     except requests.exceptions.RequestException as e:
         print(str(e))
-        raise RuntimeError("Error en llamada a Moodle") from e
-    
+        raise RuntimeError("Error general en request a Moodle") from e
+
+    # --- Validar JSON ---
     try:
-        return response.json()
+        data = response.json()
     except ValueError:
         raise RuntimeError("Respuesta no es JSON válido")
+
+    # --- Validar error lógico de Moodle ---
+    if isinstance(data, dict) and "exception" in data:
+        raise RuntimeError(f"Error Moodle: {data.get('message')}")
+
+    return data

@@ -4,6 +4,7 @@ from services.log_service import logging
 from services.db_service import *
 from services.error_service import map_exception
 from services.email_service import send_email_exito
+from services.email_service import send_email_error
 
 def validacion_matricula(id_map, row, validaciones):
     logger = logging.getLogger("Subproceso 4 - Validacion Matricula")
@@ -54,9 +55,7 @@ def validacion_matricula(id_map, row, validaciones):
     
         return {
                 "status": status,
-                "validaciones": validaciones,
-                "error_id": None,
-                "excepcion": None
+                "validaciones": validaciones
             }
     
     except Exception as e:
@@ -66,14 +65,23 @@ def validacion_matricula(id_map, row, validaciones):
 
         id_ejecucion, id_log = id_map[(id_oferta, nombre_grupo)]
         finalizar_subproceso_error(id_log, 4, error_info["id"], str(e), 0)
+        finalizar_ejecucion_error(id_ejecucion, id_log, error_info["id"], str(e), 0)
 
-        status = "ERROR"
+        send_email_error(error_info)
+
+        validaciones.append({
+            "course_id": course_id,
+            "id_oferta": id_oferta,
+            "nombre_oferta": nombre_oferta,
+            "grupo": nombre_grupo,
+            "tipo_oferta": tipo_oferta,
+            "resultado": "ERROR",
+            "correo_enviado": "NO"
+        })
 
         return {
                 "status": "ERROR",
-                "validaciones": None,
-                "error_id": error_info["id"],
-                "excepcion": str(e)
+                "validaciones": validaciones
             }
 
 def enviar_correo(validaciones):
@@ -81,6 +89,14 @@ def enviar_correo(validaciones):
 
     try:
         logger.info("INICIO SUBPROCESO 4 - ENVIO CORREO")
+
+        if not validaciones:
+            logger.warning("No hay validaciones para enviar correo a interesados")
+            return
+
+        if all(v["resultado"] == "ERROR" for v in validaciones):
+            logger.error("Todos los cursos fallaron, no se envía correo")
+            return
 
         for registro in validaciones:
             tipo_oferta = registro["tipo_oferta"].upper()
