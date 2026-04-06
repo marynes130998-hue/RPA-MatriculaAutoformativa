@@ -1,5 +1,6 @@
 import requests
-from config.settings import MOODLE_URL, MOODLE_TOKEN
+""" from config.settings import MOODLE_URL, MOODLE_TOKEN """
+from config.config import *
 
 def moodle_api_get_enrolled_users(course_id, offset, limit):
     
@@ -23,7 +24,7 @@ def moodle_api_get_enrolled_users(course_id, offset, limit):
 
     # --- Validar llamada a MOODLE API ---
     try:
-        response = requests.get(MOODLE_URL, params)
+        response = requests.get(BASE_URL_MOODLE, params)
         response.raise_for_status()
 
     except requests.exceptions.Timeout as e:

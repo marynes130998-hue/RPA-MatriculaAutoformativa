@@ -96,11 +96,20 @@ Revisar/ajustar `config/settings.py`:
 Define al menos:
 
 ```env
-ENV=DEV
-SIFODS_URL_DEV=
-SIFODS_URL_PROD=
-SIFODS_TOKEN_DEV=
-SIFODS_TOKEN_PROD=
+ENV=DEV or PROD
+#SIFODS
+BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP = "https://sifods-accionesformativasmoodle-api-cap.minedu.gob.pe"
+BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_CAP = "https://sifods-administradorplataforma-api-cap.minedu.gob.pe"
+
+BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD = "https://sifods-accionesformativasmoodle-api.minedu.gob.pe"
+BASE_URL_SIFODS_ADMINISTRADOR_PLATAFORMA_PROD = "https://sifods-administradorplataforma-api.minedu.gob.pe"
+
+#MOODLE
+BASE_URL_MOODLE_PROD = "https://campusvirtual-sifods.minedu.gob.pe"
+BASE_URL_MOODLE_CAP = "https://campusvirtual-sifods.minedu.gob.pe"
+
+MOODLE_TOKEN_DEV=
+MOODLE_TOKEN_PROD=
 ```
 
 ### 3) Credenciales de Gmail

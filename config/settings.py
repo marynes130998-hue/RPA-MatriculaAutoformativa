@@ -1,12 +1,12 @@
 import os
-from dotenv import load_dotenv #seguridad de credenciales
+""" from dotenv import load_dotenv #seguridad de credenciales
 
-load_dotenv()
+load_dotenv() """
 
 # ============================================================
 # BASE DE DATOS
 # ============================================================
-SERVER = "localhost"
+SERVER = "PCPOPRDIFOD132"
 DATABASE = "db_automatizacion"
 
 # ============================================================
@@ -38,8 +38,7 @@ EMAIL_CONFIG = {
 # ============================================================
 # Límite por llamada
 nro_limit = 2000
-MOODLE_URL = "https://campusvirtual-sifods.minedu.gob.pe/webservice/rest/server.php"
-MOODLE_TOKEN = "365d5e601bd29d6e983e643c513dfb0d"
+
 
 # ============================================================
 # API SIFODS (Subproceso 2)

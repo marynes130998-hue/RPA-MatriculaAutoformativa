@@ -21,10 +21,10 @@ def obtener_inscritos():
         # ===============================================
         # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE
         # ===============================================
-        df_cursos = df_total[["cur_id", "id_oferta","nombre_oferta","nombre_grupo", "tipo_oferta"]].drop_duplicates()
+        df_cursos = df_total[["curid_sifods", "ID_OFERTA_FORMATIVA","NOMBRE_OFERTA","NOMBRE_GRUPO"]].drop_duplicates()
 
         registros = [
-            (row.id_oferta, row.nombre_grupo)
+            (row.ID_OFERTA_FORMATIVA, row.NOMBRE_GRUPO)
             for row in df_cursos.itertuples(index=False)
         ]
 

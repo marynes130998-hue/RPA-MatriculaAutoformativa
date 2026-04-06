@@ -4,15 +4,15 @@
 QUERY_OBTENER_INFO_CURSO = """
     SELECT
     *
-    FROM Participante
+    FROM MATRICULA.tb_pendientes_matricula
 """
 
 # ================================================================
 # OBTENER CANTIDAD DE MATRICULADOS POR CURSO DESDE TABLA DE SIFODS
 # ================================================================
 QUERY_OBTENER_NRO_MATRICULADOS_CURSO = """
-    SELECT COUNT(DISTINCT id_participante) AS nro_matriculados
-    FROM Participante
+    SELECT COUNT(DISTINCT ID_PARTICIPANTE) AS nro_matriculados
+    FROM MATRICULA.tb_pendientes_matricula
     WHERE cur_id = ?
 """
 
@@ -20,18 +20,18 @@ QUERY_OBTENER_NRO_MATRICULADOS_CURSO = """
 # OBTENER INFORMACIÓN DE LOS PARTICIPANTES POR CURSO PARA ENVIAR REPORTE POR CORREO
 # =================================================================================
 QUERY_INFO_PARTICIPANTE = """
-    SELECT usuario_documento, nombres, apellido_paterno, apellido_materno,
-    correo_electronico, telefono FROM Participante
-    WHERE cur_id = ?
+    SELECT USUARIO_DOCUMENTO, NOMBRES, APELLIDO_PATERNO, APELLIDO_MATERNO,
+    CORREO_ELECTRONICO FROM MATRICULA.tb_pendientes_matricula
+    WHERE curid_sifods = ?
 """
 
 # ================================================================================================
 # OBTENER INFORMACIÓN DE LOS PARTICIPANTES DE UN PROGRAMA POR CURSO PARA ENVIAR REPORTE POR CORREO
 # ================================================================================================
 QUERY_INFO_PARTICIPANTE_PROGRAMA = """
-    SELECT usuario_documento, nombres, apellido_paterno, apellido_materno,
-    correo_electronico, telefono FROM Participante
-    WHERE id_oferta = ?
+    SELECT USUARIO_DOCUMENTO, NOMBRES, APELLIDO_PATERNO, APELLIDO_MATERNO,
+    CORREO_ELECTRONICO FROM MATRICULA.tb_pendientes_matricula
+    WHERE ID_OFERTA_FORMATIVA = ?
 """
 
 # =========================

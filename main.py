@@ -29,7 +29,7 @@ def main():
                 return
 
             # Subproceso 2
-            registros, id_map, df_total, df_cursos = obtener_inscritos_mock()
+            #registros, id_map, df_total, df_cursos = obtener_inscritos_mock()
             ejecutar_subproceso2(registros, id_map, df_cursos, df_total)
 
             #Subproceso 3
