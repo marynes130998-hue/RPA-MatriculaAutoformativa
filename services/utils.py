@@ -7,26 +7,9 @@ from services.common import *
 from db.connection import get_connection
 from db.queries import QUERY_VERIFICAR_USUARIOS_SIFODS
 
-
-# Cantidad de inscritos por oferta/grupo para trazabilidad de estados
-def obtener_conteo_por_grupo(df_total):
-    return (
-        df_total.groupby(["ID_OFERTA_FORMATIVA", "NOMBRE_GRUPO"])["USUARIO_DOCUMENTO"]
-        .nunique()
-        .to_dict()
-    )
-
-
 # ==============================================================
 # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE y EN_EJECUCION
 # ==============================================================
-def iniciar_subproceso2(registros, id_map, conteo_por_grupo):
-    for id_oferta, grupo in registros:
-        id_ejecucion, id_log = id_map[(id_oferta, grupo)]
-        nro_inscritos = int(conteo_por_grupo.get((id_oferta, grupo), 0))
-        iniciar_subproceso(id_log, 2, nro_inscritos)
-
-
 def validar_usuarios_sifods(df_total):
     """
     Verifica qué usuarios ya existen en SIFODS consultando directamente
@@ -62,7 +45,6 @@ def validar_usuarios_sifods(df_total):
 
     return documentos_inscritos, documentos_existentes, documentos_faltantes
 
-
 # Crear faltantes en SIFODS via API
 def crear_usuarios_faltantes(df_total, documentos_faltantes):
 
@@ -83,11 +65,3 @@ def crear_usuarios_faltantes(df_total, documentos_faltantes):
     ]
 
     return crear_usuarios_sifods(usuarios_a_crear)
-
-
-def finalizar_subproceso2(registros, id_map, conteo_por_grupo):
-
-    for id_oferta, grupo in registros:
-        id_ejecucion, id_log = id_map[(id_oferta, grupo)]
-        nro_inscritos = int(conteo_por_grupo.get((id_oferta, grupo), 0))
-        finalizar_subproceso_ok(id_log, 2, nro_inscritos)

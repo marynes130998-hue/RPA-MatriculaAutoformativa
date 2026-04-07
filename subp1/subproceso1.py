@@ -60,7 +60,7 @@ def obtener_inscritos():
         logger.info(str(e))
 
         registros = [
-            (row.id_oferta, row.nombre_grupo, error_info["id"])
+            (row.ID_OFERTA_FORMATIVA, row.NOMBRE_GRUPO, error_info["id"])
             for row in df_cursos.itertuples(index=False)
         ]
 

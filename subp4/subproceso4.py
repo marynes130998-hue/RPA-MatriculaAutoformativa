@@ -12,11 +12,11 @@ def validacion_matricula(id_map, row, validaciones):
     try:
         logger.info("INICIO SUBPROCESO 4 - VALIDACION MATRICULA")
 
-        course_id = row.cur_id
-        id_oferta = row.id_oferta
-        nombre_oferta = row.nombre_oferta
-        nombre_grupo = row.nombre_grupo
-        tipo_oferta = row.tipo_oferta
+        course_id = row.curid_sifods
+        id_oferta = row.ID_OFERTA_FORMATIVA
+        nombre_oferta = row.NOMBRE_OFERTA
+        nombre_grupo = row.NOMBRE_GRUPO
+        tipo_oferta = row.tipo_oferta #PENDIENTE DE MODIFICAR AL AGREGAR A LA QUERY_INFO_PARTICIPANTE
 
         # ==============================================================
         # INSERTAR REGISTROS DE LOS CURSOS COMO PENDIENTE Y EN_EJECUCION

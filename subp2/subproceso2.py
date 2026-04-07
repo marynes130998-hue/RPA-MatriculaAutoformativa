@@ -15,21 +15,12 @@ def ejecutar_subproceso2(registros, id_map, df_cursos, df_total):
         for id_oferta, grupo in registros:
             id_ejecucion, id_log = id_map[(id_oferta, grupo)]
             iniciar_subproceso(id_log, 2, 0)
-        
-        # 1. Obtener conteo
-        conteo_por_grupo = obtener_conteo_por_grupo(df_total)
-        
-        # 2. Iniciar subproceso
-        iniciar_subproceso2(registros, id_map, conteo_por_grupo)
 
-        # 3. Validar usuarios
+        # 1. Validar usuarios
         documentos_inscritos, documentos_existentes, documentos_faltantes = validar_usuarios_sifods(df_total)
 
-        # 4. Crear usuarios faltantes
+        # 2. Crear usuarios faltantes
         total_creados = crear_usuarios_faltantes(df_total, documentos_faltantes)
-
-        # 5. Finalizar subproceso OK
-        finalizar_subproceso2(registros, id_map, conteo_por_grupo)
 
         # ==================================================================
         # LUEGO DEL PASO N, INSERTAR REGISTROS DE LOS CURSOS COMO COMPLETADO
