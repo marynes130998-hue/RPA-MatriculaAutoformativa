@@ -1,16 +1,17 @@
 from services.log_service import logging
 from services.error_service import map_exception
 from services.db_service import *
-from services.sifods_api import consultar_documentos_existentes, crear_usuarios_sifods
+from services.sifods_api import crear_usuarios_sifods
 from services.payload_builder import construir_payload_usuario
 from services.common import *
+from db.connection import get_connection
+from db.queries import QUERY_VERIFICAR_USUARIOS_SIFODS
 
-#nueva funcion==============================================================
 
 # Cantidad de inscritos por oferta/grupo para trazabilidad de estados
 def obtener_conteo_por_grupo(df_total):
     return (
-        df_total.groupby(["id_oferta", "nombre_grupo"])["usuario_documento"]
+        df_total.groupby(["ID_OFERTA_FORMATIVA", "NOMBRE_GRUPO"])["USUARIO_DOCUMENTO"]
         .nunique()
         .to_dict()
     )
@@ -26,21 +27,43 @@ def iniciar_subproceso2(registros, id_map, conteo_por_grupo):
         iniciar_subproceso(id_log, 2, nro_inscritos)
 
 
-#validar usuarios en sifods
 def validar_usuarios_sifods(df_total):
+    """
+    Verifica qué usuarios ya existen en SIFODS consultando directamente
+    la tabla [db_sifods_bi].[dm].[stge_sfds_docente_general] por BD.
 
+    Retorna:
+        documentos_inscritos  (set): Todos los documentos a matricular.
+        documentos_existentes (set): Los que ya existen en SIFODS.
+        documentos_faltantes  (set): Los que NO existen y deben crearse.
+    """
     documentos_inscritos = {
         normalizar_documento(doc)
-        for doc in df_total["usuario_documento"].dropna().tolist()
+        for doc in df_total["USUARIO_DOCUMENTO"].dropna().tolist()
         if normalizar_documento(doc)
     }
 
-    documentos_existentes = consultar_documentos_existentes(list(documentos_inscritos))
-    documentos_faltantes = documentos_inscritos - set(documentos_existentes)
+    if not documentos_inscritos:
+        return set(), set(), set()
+
+    # Construir placeholders dinámicos para el IN (?,?,?...)
+    lista_docs = list(documentos_inscritos)
+    placeholders = ",".join(["?" for _ in lista_docs])
+    query = QUERY_VERIFICAR_USUARIOS_SIFODS.format(placeholders=placeholders)
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(query, tuple(lista_docs))  # pyodbc requiere tuple, no list
+    filas = cursor.fetchall()
+    conn.close()
+
+    documentos_existentes = {str(fila[0]).strip() for fila in filas}
+    documentos_faltantes = documentos_inscritos - documentos_existentes
 
     return documentos_inscritos, documentos_existentes, documentos_faltantes
 
-#crear faltantes en sifods
+
+# Crear faltantes en SIFODS via API
 def crear_usuarios_faltantes(df_total, documentos_faltantes):
 
     if not documentos_faltantes:
@@ -48,9 +71,9 @@ def crear_usuarios_faltantes(df_total, documentos_faltantes):
 
     df_faltantes = (
         df_total[
-            df_total["usuario_documento"].astype(str).str.strip().isin(documentos_faltantes)
+            df_total["USUARIO_DOCUMENTO"].astype(str).str.strip().isin(documentos_faltantes)
         ]
-        .drop_duplicates(subset=["usuario_documento"])
+        .drop_duplicates(subset=["USUARIO_DOCUMENTO"])
         .copy()
     )
 

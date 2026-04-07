@@ -1,5 +1,5 @@
 import requests
-from config.settings import (
+from config.config import (
     SIFODS_API_BASE_URL,
     SIFODS_API_TOKEN,
     SIFODS_API_TIMEOUT,
@@ -26,52 +26,52 @@ def _validate_base_url():
         )
 
 
-def consultar_documentos_existentes(documentos):
-    """
-    Consulta existencia de usuarios por documento en API SIFODS.
+# def consultar_documentos_existentes(documentos):
+#     """
+#     Consulta existencia de usuarios por documento en API SIFODS.
 
-    Contrato esperado (ajustable según API real):
-      POST {base_url}/usuarios/existencia
-      body: {"documentos": ["123", ...]}
-      response: {"documentos_existentes": ["123", ...]}
-    """
-    if not documentos:
-        return set()
+#     Contrato esperado (ajustable según API real):
+#       POST {base_url}/usuarios/existencia
+#       body: {"documentos": ["123", ...]}
+#       response: {"documentos_existentes": ["123", ...]}
+#     """
+#     if not documentos:
+#         return set()
 
-    _validate_base_url()
+#     _validate_base_url()
 
-    endpoint = f"{SIFODS_API_BASE_URL.rstrip('/')}/usuarios/existencia"
-    headers = _build_headers()
+#     endpoint = f"{SIFODS_API_BASE_URL.rstrip('/')}/usuarios/existencia"
+#     headers = _build_headers()
 
-    existentes = set()
+#     existentes = set()
 
-    for batch in _chunked(documentos, SIFODS_API_BATCH_SIZE):
-        resp = requests.post(
-            endpoint,
-            json={"documentos": batch},
-            headers=headers,
-            timeout=SIFODS_API_TIMEOUT,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+#     for batch in _chunked(documentos, SIFODS_API_BATCH_SIZE):
+#         resp = requests.post(
+#             endpoint,
+#             json={"documentos": batch},
+#             headers=headers,
+#             timeout=SIFODS_API_TIMEOUT,verify=False
+#         )
+#         resp.raise_for_status()
+#         data = resp.json()
 
-        docs = (
-            data.get("documentos_existentes")
-            or data.get("documentos")
-            or data.get("data")
-            or []
-        )
+#         docs = (
+#             data.get("documentos_existentes")
+#             or data.get("documentos")
+#             or data.get("data")
+#             or []
+#         )
 
-        if isinstance(docs, list):
-            for d in docs:
-                if isinstance(d, dict):
-                    doc = d.get("documento") or d.get("dni") or d.get("username")
-                    if doc:
-                        existentes.add(str(doc).strip())
-                else:
-                    existentes.add(str(d).strip())
+#         if isinstance(docs, list):
+#             for d in docs:
+#                 if isinstance(d, dict):
+#                     doc = d.get("documento") or d.get("dni") or d.get("username")
+#                     if doc:
+#                         existentes.add(str(doc).strip())
+#                 else:
+#                     existentes.add(str(d).strip())
 
-    return existentes
+#     return existentes
 
 
 def crear_usuarios_sifods(usuarios):
@@ -97,7 +97,7 @@ def crear_usuarios_sifods(usuarios):
             endpoint,
             json={"usuarios": batch},
             headers=headers,
-            timeout=SIFODS_API_TIMEOUT,
+            timeout=SIFODS_API_TIMEOUT,verify=False
         )
         resp.raise_for_status()
 

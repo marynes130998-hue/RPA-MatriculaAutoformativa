@@ -1,3 +1,14 @@
+# ================================================================
+# VERIFICAR USUARIOS EXISTENTES EN SIFODS DESDE BD
+# Retorna los documentos que YA existen en la tabla de docentes.
+# Se usa con formato dinámico: .format(placeholders="?,?,?")
+# ================================================================
+QUERY_VERIFICAR_USUARIOS_SIFODS = """
+    SELECT DOCUMENTO_IDENTIDAD
+    FROM [db_sifods_bi].[dm].[stge_sfds_docente_general]
+    WHERE DOCUMENTO_IDENTIDAD IN ({placeholders})
+"""
+
 # ==============================================================
 # OBTENER REGISTROS DE OFERTA, GRUPO Y PARTICIPANTE A MATRICULAR
 # ==============================================================

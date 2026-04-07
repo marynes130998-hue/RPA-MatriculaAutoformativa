@@ -1,7 +1,7 @@
 import os
-""" from dotenv import load_dotenv #seguridad de credenciales
+from dotenv import load_dotenv #seguridad de credenciales
 
-load_dotenv() """
+load_dotenv() 
 
 # ============================================================
 # BASE DE DATOS
@@ -49,10 +49,10 @@ nro_limit = 2000
 #   Respuesta esperada: {"documentos_existentes": ["12345678", ...]}
 # - Endpoint creación: {SIFODS_API_BASE_URL}/usuarios
 #   Body esperado: {"usuarios": [{...}, ...]}
-SIFODS_API_BASE_URL = ""
-SIFODS_API_TOKEN = ""
-SIFODS_API_TIMEOUT = 30
-SIFODS_API_BATCH_SIZE = 500
+# # SIFODS_API_BASE_URL = ""
+# # SIFODS_API_TOKEN = ""
+# # SIFODS_API_TIMEOUT = 30
+# # SIFODS_API_BATCH_SIZE = 500
 
 # ============================================================
 # CONFIGURACIÓN DEL ROBOT

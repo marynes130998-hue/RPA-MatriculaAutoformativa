@@ -115,7 +115,7 @@ def construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_of
 
     # Renombrar columna "usuario_documento" como "DNI"
     df = df.rename(columns={
-    "usuario_documento": "DNI"
+    "USUARIO_DOCUMENTO": "DNI"
     })
 
     df["OBSERVACION TI"] = "MATRICULADO"

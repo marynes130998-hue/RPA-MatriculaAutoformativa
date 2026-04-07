@@ -1,7 +1,6 @@
 from services.log_service import logging
 from services.error_service import map_exception
 from services.db_service import *
-from services.sifods_api import consultar_documentos_existentes, crear_usuarios_sifods
 from services.utils import *
 
 def ejecutar_subproceso2(registros, id_map, df_cursos, df_total):
@@ -54,7 +53,7 @@ def ejecutar_subproceso2(registros, id_map, df_cursos, df_total):
         logger.info(str(e))
 
         registros = [
-            (row.id_oferta, row.nombre_grupo, error_info["id"])
+            (row.ID_OFERTA_FORMATIVA, row.NOMBRE_GRUPO, error_info["id"])
             for row in df_cursos.itertuples(index=False)
         ]
 
