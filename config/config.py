@@ -1,6 +1,6 @@
 from config.settings import *
 
-ENV = "CAP"   # DEV / PROD
+ENV = "PROD"   # DEV / CAP / PROD
 
 if ENV == "CAP":
     BASE_URL_ACCIONES_FORMATIVAS = BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP
@@ -10,9 +10,13 @@ if ENV == "CAP":
 
     # API SIFODS: URL base para gestión de usuarios (crear/consultar)
     SIFODS_API_BASE_URL = BASE_URL_SIFODS_ACCIONES_FORMATIVAS_CAP
-    SIFODS_API_TOKEN    = ""   # Sin token requerido en CAP
+    SIFODS_API_TOKEN    = ""
     SIFODS_API_TIMEOUT  = 30
     SIFODS_API_BATCH_SIZE = 500
+
+    # RENIEC y Perfil Docente
+    URL_RENIEC           = BASE_URL_RENIEC_CAP
+    URL_PERFIL_DOCENTE   = BASE_URL_SIFODS_PERFIL_DOCENTE_CAP
 
 elif ENV == "PROD":
     BASE_URL_ACCIONES_FORMATIVAS = BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD
@@ -22,6 +26,10 @@ elif ENV == "PROD":
 
     # API SIFODS: URL base para gestión de usuarios (crear/consultar)
     SIFODS_API_BASE_URL = BASE_URL_SIFODS_ACCIONES_FORMATIVAS_PROD
-    SIFODS_API_TOKEN    = ""   # Configurar token PROD si aplica
+    SIFODS_API_TOKEN    = ""
     SIFODS_API_TIMEOUT  = 30
     SIFODS_API_BATCH_SIZE = 500
+
+    # RENIEC y Perfil Docente
+    URL_RENIEC           = BASE_URL_RENIEC_PROD
+    URL_PERFIL_DOCENTE   = BASE_URL_SIFODS_PERFIL_DOCENTE_PROD

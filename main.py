@@ -33,21 +33,21 @@ def main():
             ejecutar_subproceso2(registros, id_map, df_cursos, df_total)
 
             #Subproceso 3
-            ejecutar_matricula(registros, id_map, df_cursos, df_total)
+            # # ejecutar_matricula(registros, id_map, df_cursos, df_total)
 
-            validaciones = []
-            for row in df_cursos.itertuples(index=False):
-                #Subproceso 4 - Parte 1
-                result = validacion_matricula(id_map, row, validaciones)
+            # # validaciones = []
+            # # for row in df_cursos.itertuples(index=False):
+            # #     #Subproceso 4 - Parte 1
+            # #     result = validacion_matricula(id_map, row, validaciones)
                 
-                if result["status"] == "NOK" or result["status"] == "ERROR":
-                    todo_ok = False
+            # #     if result["status"] == "NOK" or result["status"] == "ERROR":
+            # #         todo_ok = False
 
-            # Subproceso 4 - Parte 2
-            enviar_correo(validaciones)
+            # # # Subproceso 4 - Parte 2
+            # # enviar_correo(validaciones)
 
-            # Información a Equipo
-            send_email_info(validaciones)
+            # # # Información a Equipo
+            # # send_email_info(validaciones)
 
             if todo_ok:
                 logger.info("Todas las matrículas fueron validadas correctamente")

@@ -6,7 +6,7 @@
 QUERY_VERIFICAR_USUARIOS_SIFODS = """
     SELECT DOCUMENTO_IDENTIDAD
     FROM [db_sifods_bi].[dm].[stge_sfds_docente_general]
-    WHERE DOCUMENTO_IDENTIDAD IN ({placeholders})
+    WHERE DOCUMENTO_IDENTIDAD IN ({valores})
 """
 
 # ==============================================================

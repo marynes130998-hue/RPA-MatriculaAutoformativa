@@ -2,7 +2,6 @@ from services.log_service import logging
 from services.error_service import map_exception
 from services.db_service import *
 from services.sifods_api import crear_usuarios_sifods
-from services.payload_builder import construir_payload_usuario
 from services.common import *
 from db.connection import get_connection
 from db.queries import QUERY_VERIFICAR_USUARIOS_SIFODS
@@ -29,14 +28,15 @@ def validar_usuarios_sifods(df_total):
     if not documentos_inscritos:
         return set(), set(), set()
 
-    # Construir placeholders dinámicos para el IN (?,?,?...)
+    # Embebemos los valores directamente como literales en el IN.
+    # Esto evita el límite de 2100 parámetros de pyodbc/SQL Server.
     lista_docs = list(documentos_inscritos)
-    placeholders = ",".join(["?" for _ in lista_docs])
-    query = QUERY_VERIFICAR_USUARIOS_SIFODS.format(placeholders=placeholders)
+    valores_sql = ",".join(f"'{doc}'" for doc in lista_docs)
+    query = QUERY_VERIFICAR_USUARIOS_SIFODS.format(valores=valores_sql)
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute(query, tuple(lista_docs))  # pyodbc requiere tuple, no list
+    cursor.execute(query)
     filas = cursor.fetchall()
     conn.close()
 
@@ -59,9 +59,5 @@ def crear_usuarios_faltantes(df_total, documentos_faltantes):
         .copy()
     )
 
-    usuarios_a_crear = [
-        construir_payload_usuario(row)
-        for row in df_faltantes.itertuples(index=False)
-    ]
-
-    return crear_usuarios_sifods(usuarios_a_crear)
+    # Pasa el DataFrame directamente: sifods_api consulta RENIEC por cada DNI
+    return crear_usuarios_sifods(df_faltantes)
