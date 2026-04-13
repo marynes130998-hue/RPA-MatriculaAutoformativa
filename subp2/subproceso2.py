@@ -16,11 +16,17 @@ def ejecutar_subproceso2(registros, id_map, df_cursos, df_total):
             id_ejecucion, id_log = id_map[(id_oferta, grupo)]
             iniciar_subproceso(id_log, 2, 0)
 
-        # 1. Validar usuarios
+        # 1. Validar usuarios en SIFODS
         documentos_inscritos, documentos_existentes, documentos_faltantes = validar_usuarios_sifods(df_total)
 
-        # 2. Crear usuarios faltantes
-        total_creados = crear_usuarios_faltantes(df_total, documentos_faltantes)
+        # 2. Crear usuarios faltantes en SIFODS
+        total_creados_sifods = crear_usuarios_faltantes(df_total, documentos_faltantes)
+
+        # 3. Validar usuarios en Moodle
+        _, existentes_moodle, faltantes_moodle = validar_usuarios_moodle(df_total)
+
+        # 4. Crear usuarios faltantes en Moodle
+        total_creados_moodle = crear_usuarios_moodle(df_total, faltantes_moodle)
 
         # ==================================================================
         # LUEGO DEL PASO N, INSERTAR REGISTROS DE LOS CURSOS COMO COMPLETADO
@@ -32,10 +38,13 @@ def ejecutar_subproceso2(registros, id_map, df_cursos, df_total):
         logger.info("FIN SUBPROCESO 2")
 
         return {
-                    "documentos_inscritos": len(documentos_inscritos),
-                    "documentos_existentes": len(documentos_existentes),
-                    "documentos_faltantes": len(documentos_faltantes),
-                    "usuarios_creados": total_creados,
+                    "documentos_inscritos":      len(documentos_inscritos),
+                    "documentos_existentes":     len(documentos_existentes),
+                    "documentos_faltantes":      len(documentos_faltantes),
+                    "usuarios_creados_sifods":   total_creados_sifods,
+                    "existentes_moodle":         len(existentes_moodle),
+                    "faltantes_moodle":          len(faltantes_moodle),
+                    "usuarios_creados_moodle":   total_creados_moodle,
                 }
 
     except Exception as e:
