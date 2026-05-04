@@ -113,11 +113,6 @@ def construir_reporte(nombre_oferta, nombre_grupo, course_id, tipo_oferta, id_of
     elif tipo_oferta == "PROGRAMA":
         df = execute_query_df(queries.QUERY_INFO_PARTICIPANTE_PROGRAMA, (id_oferta,))
 
-    # Renombrar columna "usuario_documento" como "DNI"
-    df = df.rename(columns={
-    "USUARIO_DOCUMENTO": "DNI"
-    })
-
     df["OBSERVACION TI"] = "MATRICULADO"
 
     # 🔹 Conteos
