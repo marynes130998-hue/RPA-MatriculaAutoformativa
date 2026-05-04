@@ -9,29 +9,29 @@ import pandas as pd
 # DNIs de prueba:
 #   43363864 -> ya existe en SIFODS y Moodle
 #   72621626 -> NO existe en SIFODS ni Moodle (para probar creacion)
-DATA = [
-    {
-        "USUARIO_DOCUMENTO": "43363864",
-        "NOMBRES":           "JOSEPH GIOVANNI",
-        "APELLIDO_PATERNO":  "MAMANI",
-        "APELLIDO_MATERNO":  "BARBAITO",
-        "CORREO_LECTRONICO": "josephgiovannix@gmail.com",
-    },
-    {
-        "USUARIO_DOCUMENTO": "72621626",
-        "NOMBRES":           "ALESSANDRA VALERIA",
-        "APELLIDO_PATERNO":  "MURGA",
-        "APELLIDO_MATERNO":  "RIMAC",
-        "CORREO_LECTRONICO": "oscarsantacruzh@gmail.com",
-    },
-]
+# DATA = [
+#     {
+#         "USUARIO_DOCUMENTO": "43363864",
+#         "NOMBRES":           "JOSEPH GIOVANNI",
+#         "APELLIDO_PATERNO":  "MAMANI",
+#         "APELLIDO_MATERNO":  "BARBAITO",
+#         "CORREO_LECTRONICO": "josephgiovannix@gmail.com",
+#     },
+#     {
+#         "USUARIO_DOCUMENTO": "72621626",
+#         "NOMBRES":           "ALESSANDRA VALERIA",
+#         "APELLIDO_PATERNO":  "MURGA",
+#         "APELLIDO_MATERNO":  "RIMAC",
+#         "CORREO_LECTRONICO": "oscarsantacruzh@gmail.com",
+#     },
+# ]
 
-df_total = pd.DataFrame(DATA)
+# df_total = pd.DataFrame(DATA)
 
-print("=" * 60)
-print("DataFrame de prueba:")
-print(df_total.to_string(index=False))
-print("=" * 60)
+# print("=" * 60)
+# print("DataFrame de prueba:")
+# print(df_total.to_string(index=False))
+# print("=" * 60)
 
 # ============================================================
 # IMPORTAR FUNCIONES DEL SUBPROCESO 2
@@ -123,8 +123,8 @@ if faltantes_moodle:
         except Exception:
             print(r4.text[:500])
 
-    total_moodle = crear_usuarios_moodle(df_total, faltantes_moodle)
-    print(f"\n  Total creados via funcion: {total_moodle}/{len(faltantes_moodle)}")
+    # total_moodle = crear_usuarios_moodle(df_total, faltantes_moodle)
+    # print(f"\n  Total creados via funcion: {total_moodle}/{len(faltantes_moodle)}")
 else:
     print("  No hay usuarios faltantes en Moodle")
 

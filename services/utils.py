@@ -1,4 +1,5 @@
 import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from services.log_service import logging
 
 from services.db_service import *
@@ -92,13 +93,12 @@ def validar_usuarios_moodle(df_total):
     if not documentos_inscritos:
         return set(), set(), set()
 
-    documentos_existentes = set()
     lista_docs = list(documentos_inscritos)
 
-    # Moodle permite consultar hasta 50 usuarios por llamada con get_users_by_field
     BATCH = 50
-    for i in range(0, len(lista_docs), BATCH):
-        lote = lista_docs[i:i + BATCH]
+    lotes = [lista_docs[i:i + BATCH] for i in range(0, len(lista_docs), BATCH)]
+
+    def consultar_lote(lote):
         params = {
             "wstoken": MOODLE_TOKEN,
             "wsfunction": "core_user_get_users_by_field",
@@ -116,11 +116,16 @@ def validar_usuarios_moodle(df_total):
             if isinstance(data, dict) and "exception" in data:
                 raise RuntimeError(f"Moodle API: {data.get('message')}")
 
-            for user in data:
-                documentos_existentes.add(str(user.get("username", "")).strip())
+            return {str(user.get("username", "")).strip() for user in data}
 
         except requests.exceptions.RequestException as e:
             raise RuntimeError(f"Moodle | Error consultando usuarios: {e}")
+
+    documentos_existentes = set()
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        futuros = {executor.submit(consultar_lote, lote): lote for lote in lotes}
+        for futuro in as_completed(futuros):
+            documentos_existentes |= futuro.result()
 
     documentos_faltantes = documentos_inscritos - documentos_existentes
     logger.info(
