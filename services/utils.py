@@ -123,6 +123,7 @@ def validar_usuarios_moodle(df_total):
 
     documentos_existentes = set()
     with ThreadPoolExecutor(max_workers=20) as executor:
+        print(f"Validando usuarios en Moodle por API en {len(lotes)} lotes...")
         futuros = {executor.submit(consultar_lote, lote): lote for lote in lotes}
         for futuro in as_completed(futuros):
             documentos_existentes |= futuro.result()
